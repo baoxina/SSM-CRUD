@@ -1,0 +1,93 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd 
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-3.2.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-3.2.xsd ">
+		
+	<!-- 与mybatis相关的关键配置就以下三部分：数据源配置、Spring与Mybatis整合配置、事务配置 -->	
+	
+	
+	
+	
+		
+	<!-- ============================数据源配置================================== -->
+	<context:property-placeholder location="classpath:others/db.properties" file-encoding="utf-8"/>
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${jdbc.driver}"/>
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<!-- <property name="threadPoolNumActiveThreads" value="10" />
+		<property name="threadPoolNumIdleThreads" value="5" /> -->
+	</bean>
+	<!-- ============================数据源配置================================== -->
+	
+	
+	
+	<!-- ============================Spring与Mybatis整合配置================================== -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<!-- 指定mybatis核心配置文件路径 -->
+		<property name="configLocation" value="classpath:mybatis/mybatis-config.xml"/>
+		<!-- 配置分页插件 -->
+		<property name="plugins">
+			<array>
+				<bean class="com.github.pagehelper.PageInterceptor">
+					<!-- supportMethodsArguments：支持通过 Mapper 接口参数来传递分页参数，默认值false.
+						分页插件会从查询方法的参数值中，自动根据下面 params 配置的字段中取值，查找到合适的值时就会自动分页 -->
+					<property name="properties">
+			          <!--使用下面的方式配置参数，一行配置一个 -->
+			          <value>
+			            supportMethodsArguments=true
+			            params=pageNum=pageNumKey;pageSize=pageSizeKey;
+			          </value>
+			        </property>	
+				</bean>
+			</array>
+		</property>
+	</bean>
+	
+	<!-- 配置一个可以执行批量操作的sqlSession -->
+	<bean id="batchOperationSqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/>
+		<constructor-arg name="executorType" value="BATCH"/>		
+	</bean>
+
+	<!-- 配置扫描器，将mybatis接口的实现加入到ioc容器中 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.baoxina.ssm.crud.mapper"/>
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+	</bean>
+	
+	<!-- 不扫描控制器，其他都扫描 -->
+	<context:component-scan base-package="com.baoxina.ssm.crud">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+	</context:component-scan>
+	<!-- ============================Spring与Mybatis整合配置================================== -->
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<!-- ============================事务配置放在了单独的spring-transaction.xml文件中了================================== -->
+	
+	
+	
+	
+	<!-- ============================事务配置放在了单独的spring-transaction.xml文件中了================================== -->
+</beans>

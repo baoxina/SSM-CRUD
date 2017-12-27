@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 与spring整合之后，mybatis核心配置文件主要配置以下两点 -->
+
+
+
+	<!-- 环境变量设置 -->
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true"/>
+		<setting name="cacheEnabled" value="true"/>
+		<setting name="lazyLoadingEnabled" value="true"/>
+		<setting name="aggressiveLazyLoading" value="false"/>
+	</settings>
+	<!-- javabean别名配置 -->
+	<typeAliases>
+		<package name="com.baoxina.ssm.crud.po"/>
+	</typeAliases>
+</configuration>
